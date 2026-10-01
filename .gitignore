@@ -1,2 +1,6 @@
 .env
 node_modules
+.last-run
+checkpoints.db
+checkpoints.db-wal
+checkpoints.db-shm

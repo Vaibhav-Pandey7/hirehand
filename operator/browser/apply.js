@@ -24,6 +24,8 @@ async function readFields(page) {
 
 async function applyGeneric(page, url, candidate, jobTitle) {
   let serverError = null;
+  let submitted = false;   // becomes true only after the submit click
+
   page.on('response', (r) => {
     if (r.request().method() === 'POST' && r.status() >= 500) serverError = r.status();
   });
@@ -33,7 +35,9 @@ async function applyGeneric(page, url, candidate, jobTitle) {
 
     for (let step = 1; step <= MAX_STEPS; step++) {
       const fields = await readFields(page);
-      if (fields.length === 0) return { status: 'failed', reason: 'no form fields found' };
+      if (fields.length === 0) {
+        return { status: 'failed', reason: 'no form fields found', maybeSaved: false };
+      }
 
       // Ask Gemini to map candidate data onto the fields
       const mapping = await askJSON(
@@ -49,26 +53,47 @@ If a field cannot be filled from the data, use null.`
       // Validate: stop if a required field has no value (never submit a half-filled form)
       const missing = fields.filter((f) => f.required && !mapping[f.index]);
       if (missing.length) {
-        return { status: 'failed', reason: 'missing required field: ' + (missing[0].name || missing[0].placeholder) };
+        return {
+          status: 'failed',
+          reason: 'missing required field: ' + (missing[0].name || missing[0].placeholder),
+          maybeSaved: false,
+        };
       }
 
       for (const f of fields) {
-        if (mapping[f.index]) await page.fill(`[data-hh="${f.index}"]`, String(mapping[f.index]));
+        if (mapping[f.index]) {
+          await page.fill(`[data-hh="${f.index}"]`, String(mapping[f.index]));
+        }
       }
 
+      // The moment of no return: after this, the server may have saved something
       await page.locator('button, input[type=submit]').first().click();
+      submitted = true;
+
       await page.waitForLoadState('load');
 
-      if (serverError) return { status: 'failed', reason: `server error ${serverError}`, maybeSaved: true };
+      if (serverError) {
+        return { status: 'failed', reason: `server error ${serverError}`, maybeSaved: true };
+      }
 
       const text = await page.locator('body').innerText();
-      if (/application received/i.test(text)) return { status: 'submitted' };
+      if (/application received/i.test(text)) {
+        return { status: 'submitted' };
+      }
       // otherwise this was probably step 1 of a multi-step form, so loop again
     }
-    return { status: 'failed', reason: 'no confirmation page after max steps', maybeSaved: true };
+
+    return {
+      status: 'failed',
+      reason: 'no confirmation page after max steps',
+      maybeSaved: submitted,
+    };
   } catch (err) {
-    // timeouts land here: the server may or may not have saved it
-    return { status: 'failed', reason: err.message.split('\n')[0], maybeSaved: true };
+    return {
+      status: 'failed',
+      reason: err.message.split('\n')[0],
+      maybeSaved: submitted,
+    };
   }
 }
 
