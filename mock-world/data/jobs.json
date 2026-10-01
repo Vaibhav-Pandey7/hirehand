@@ -1,0 +1,12 @@
+{
+  "acme": [
+    { "id": "a1", "title": "Backend Engineer", "location": "Bengaluru", "remote": false, "minExp": 0, "maxExp": 2, "skills": ["Node.js", "MongoDB", "Express"] },
+    { "id": "a2", "title": "AI Engineer Intern", "location": "Remote", "remote": true, "minExp": 0, "maxExp": 1, "skills": ["Python", "LLMs", "LangGraph"] },
+    { "id": "a3", "title": "Senior DevOps Engineer", "location": "Pune", "remote": false, "minExp": 5, "maxExp": 8, "skills": ["AWS", "Kubernetes"] }
+  ],
+  "zenith": [
+    { "id": "z1", "title": "Full Stack Developer", "location": "Remote", "remote": true, "minExp": 0, "maxExp": 2, "skills": ["React", "Node.js", "MongoDB"] },
+    { "id": "z2", "title": "Backend Developer", "location": "Delhi", "remote": false, "minExp": 1, "maxExp": 3, "skills": ["Node.js", "PostgreSQL"] },
+    { "id": "z3", "title": "Data Analyst", "location": "Mumbai", "remote": false, "minExp": 2, "maxExp": 4, "skills": ["SQL", "Tableau"] }
+  ]
+}
