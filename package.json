@@ -7,7 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "setup": "playwright install chromium",
-    "test-apply": "node operator/tests/test-apply.js"
+    "test-apply": "node operator/tests/test-apply.js",
+    "test-parse": "node operator/tests/test-parse.js"
   },
   "keywords": [],
   "author": "",

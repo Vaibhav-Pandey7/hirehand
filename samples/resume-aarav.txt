@@ -1,0 +1,6 @@
+Aarav Sharma
+aarav.sharma@example.com | Delhi
+Final-year B.Tech CS student. Built REST APIs and a small MERN app.
+Skills: Node.js, Express, MongoDB, React, LangGraph, JavaScript
+Experience: 6-month backend internship (Node.js, MongoDB)
+Target roles: Backend Engineer, Full Stack Developer, AI Engineer Intern
