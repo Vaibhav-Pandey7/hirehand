@@ -81,7 +81,7 @@ The operator is a LangGraph state machine:
 
    ```bash
    git clone https://github.com/Vaibhav-Pandey7/hirehand.git
-   cd HireHand
+   cd hirehand
    ```
 
 2. **Install dependencies:**
