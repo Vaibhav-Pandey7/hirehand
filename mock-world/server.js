@@ -8,6 +8,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use((req, res, next) => {//this is because the browser caches the page and if the user clicks back then the page is loaded from cache and the data is not updated so to avoid this we set the cache-control header to no-store
+  res.set('Cache-Control', 'no-store');
+  next();
+});
 
 const DATA = path.join(__dirname, "data");
 const read = (f) => JSON.parse(fs.readFileSync(path.join(DATA, f), "utf8"));
