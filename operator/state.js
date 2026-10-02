@@ -13,5 +13,5 @@ export const State = Annotation.Root({
   verified: Annotation(),
   outcome: Annotation(), // result of the latest apply attempt
   attempts: Annotation(), // attempts for the current job
-  approaved: Annotation(), // jobs that have been approved by the user
+  approved: Annotation(), // jobs that have been approved by the user
 });

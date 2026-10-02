@@ -1,9 +1,11 @@
 import fs from "fs";
 import { app } from "./graph.js";
 
-const args = process.argv.slice(2);
-const resumeIdx = args.indexOf("--resume");
+const raw = process.argv.slice(2);
+if (raw.includes("--yes")) process.env.AUTO_APPROVE = "1"; // testing only
+const args = raw.filter((a) => a !== "--yes");
 
+const resumeIdx = args.indexOf("--resume");
 let config;
 let input;
 
@@ -16,12 +18,12 @@ if (resumeIdx !== -1) {
 } else {
   const [goalText, resumePath] = args;
   if (!goalText || !resumePath) {
-    console.log('Usage: npm run operator -- "<goal>" <resume path>');
+    console.log('Usage: npm run operator -- "<goal>" <resume path> [--yes]');
     console.log("   or: npm run operator -- --resume [thread id]");
     process.exit(1);
   }
   const threadId = `run-${Date.now()}`;
-  fs.writeFileSync(".last-run", threadId); // remember it, so --resume can find it
+  fs.writeFileSync(".last-run", threadId); // remember it so --resume can find it
   console.log(`Run id: ${threadId}`);
   config = { configurable: { thread_id: threadId } };
   input = { goalText, resumePath };
