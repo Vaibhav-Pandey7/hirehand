@@ -1,5 +1,6 @@
 import fs from "fs";
 import { app } from "./graph.js";
+import { setPaused } from "./control.js";
 
 const raw = process.argv.slice(2);
 if (raw.includes("--yes")) process.env.AUTO_APPROVE = "1"; // testing only
@@ -22,6 +23,7 @@ if (resumeIdx !== -1) {
     console.log("   or: npm run operator -- --resume [thread id]");
     process.exit(1);
   }
+  setPaused(false); // a stale pause file from an old run must not freeze a fresh run
   const threadId = `run-${Date.now()}`;
   fs.writeFileSync(".last-run", threadId); // remember it so --resume can find it
   console.log(`Run id: ${threadId}`);

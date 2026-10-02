@@ -7,9 +7,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "setup": "playwright install chromium",
+    "mock": "node mock-world/server.js",
+    "operator": "node operator/index.js",
+    "pause": "node operator/pause.js on",
+    "unpause": "node operator/pause.js off",
     "test-apply": "node operator/tests/test-apply.js",
-    "test-parse": "node operator/tests/test-parse.js",
-    "operator": "node operator/index.js"
+    "test-parse": "node operator/tests/test-parse.js"
   },
   "keywords": [],
   "author": "",

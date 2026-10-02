@@ -4,3 +4,4 @@ node_modules
 checkpoints.db
 checkpoints.db-wal
 checkpoints.db-shm
+.pause
