@@ -9,6 +9,7 @@ import { askApproval } from "./nodes/askApproval.js";
 import { applyToJob } from "./nodes/applyToJob.js";
 import { recover } from "./nodes/recover.js";
 import { verify } from "./nodes/verify.js";
+import { notify } from "./nodes/notify.js";
 import { finalReport } from "./nodes/finalReport.js";
 
 // Saved to disk, so a crashed run can be continued after a restart
@@ -31,6 +32,7 @@ export const app = new StateGraph(State)
   .addNode("applyToJob", applyToJob)
   .addNode("recover", recover)
   .addNode("verify", verify)
+  .addNode("notify", notify)
   .addNode("finalReport", finalReport)
   .addEdge(START, "parseInputs")
   .addEdge("parseInputs", "findJobs")
@@ -40,6 +42,7 @@ export const app = new StateGraph(State)
   .addConditionalEdges("askApproval", (s) => (s.approved ? "applyToJob" : more(s)))
   .addConditionalEdges("applyToJob", (s) => (s.outcome.status === "failed" ? "recover" : more(s)))
   .addConditionalEdges("recover", (s) => (s.outcome.status === "retry" ? "applyToJob" : more(s)))
-  .addEdge("verify", "finalReport")
+  .addEdge("verify", "notify")
+  .addEdge("notify", "finalReport")
   .addEdge("finalReport", END)
   .compile({ checkpointer });

@@ -7,11 +7,12 @@ export const State = Annotation.Root({
   goal: Annotation(),
   candidate: Annotation(),
   jobs: Annotation(),
-  queue: Annotation(), // jobs still to apply to
-  current: Annotation(), // the job being processed
+  queue: Annotation(),    // jobs still to apply to
+  current: Annotation(),  // the job being processed
+  approved: Annotation(), // did the user approve the current job
+  outcome: Annotation(),  // result of the latest apply attempt
+  attempts: Annotation(), // attempts made for the current job
   results: Annotation({ reducer: (a, b) => a.concat(b), default: () => [] }), // appends
   verified: Annotation(),
-  outcome: Annotation(), // result of the latest apply attempt
-  attempts: Annotation(), // attempts for the current job
-  approved: Annotation(), // jobs that have been approved by the user
+  notice: Annotation(),   // result of the WhatsApp step
 });

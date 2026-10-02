@@ -7,9 +7,14 @@ export async function finalReport(state) {
 
   console.log("\n========== FINAL REPORT ==========");
   console.log(`Candidate: ${state.candidate.name}`);
-  console.log(`Targeted: ${rows.length} | Verified applied: ${ok.length} | Skipped: ${rows.filter((r) => r.status === "skipped").length} | Problems: ${problems.length}`);
+  console.log(
+    `Targeted: ${rows.length} | Verified applied: ${ok.length} | Skipped: ${rows.filter((r) => r.status === "skipped").length} | Problems: ${problems.length}`
+  );
   for (const r of rows) {
     console.log(` - ${r.company}/${r.title}: ${r.status}${r.reason ? " (" + r.reason + ")" : ""} | rows in tracker: ${r.saved}`);
+  }
+  if (state.notice) {
+    console.log(`WhatsApp: ${state.notice.status}${state.notice.reason ? " (" + state.notice.reason + ")" : ""}`);
   }
   if (problems.length) console.log("INCOMPLETE: see problems above");
   console.log("==================================\n");
