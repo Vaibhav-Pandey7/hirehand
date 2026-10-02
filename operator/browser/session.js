@@ -3,7 +3,7 @@ import { chromium } from "playwright";
 const BASE = "http://localhost:4000";
 
 async function openBrowser() {
-  const browser = await chromium.launch({ headless: false, slowMo: 800 }); // visible, for the demo
+  const browser = await chromium.launch({ headless: false, slowMo: 1000 }); // visible, for the demo
   const page = await browser.newPage();
   page.setDefaultTimeout(8000); // so a hung page becomes an error instead of waiting forever
   return { browser, page };

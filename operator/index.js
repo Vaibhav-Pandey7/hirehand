@@ -4,7 +4,13 @@ import { setPaused } from "./control.js";
 
 const raw = process.argv.slice(2);
 if (raw.includes("--yes")) process.env.AUTO_APPROVE = "1"; // testing only
-const args = raw.filter((a) => a !== "--yes");
+const usePanel = raw.includes("--panel");
+const args = raw.filter((a) => a !== "--yes" && a !== "--panel");
+
+if (usePanel) {
+  const { startServer } = await import("./server.js");
+  startServer();
+}
 
 const resumeIdx = args.indexOf("--resume");
 let config;
@@ -19,8 +25,8 @@ if (resumeIdx !== -1) {
 } else {
   const [goalText, resumePath] = args;
   if (!goalText || !resumePath) {
-    console.log('Usage: npm run operator -- "<goal>" <resume path> [--yes]');
-    console.log("   or: npm run operator -- --resume [thread id]");
+    console.log('Usage: npm run operator -- "<goal>" <resume path> [--yes] [--panel]');
+    console.log("   or: npm run operator -- --resume [thread id] [--panel]");
     process.exit(1);
   }
   setPaused(false); // a stale pause file from an old run must not freeze a fresh run
@@ -32,3 +38,5 @@ if (resumeIdx !== -1) {
 }
 
 await app.invoke(input, config);
+
+if (usePanel) console.log("[done] Run finished. The panel stays open. Press Ctrl+C to exit.");
