@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>HireHand control panel</title>
+<style>
+  body { font-family: sans-serif; max-width: 760px; margin: 24px auto; padding: 0 16px; }
+  #status { padding: 8px 12px; border-radius: 6px; background: #eee; margin: 12px 0; }
+  button { padding: 8px 16px; margin-right: 8px; cursor: pointer; }
+  #approval { border: 2px solid #d9a400; background: #fff8e1; padding: 12px; border-radius: 6px; margin: 12px 0; }
+  #question { white-space: pre-wrap; }
+  #log { background: #111; color: #ddd; padding: 12px; border-radius: 6px; height: 360px; overflow: auto; white-space: pre-wrap; font-size: 13px; }
+</style>
+</head>
+<body>
+  <h1>HireHand</h1>
+  <div id="status">Connecting...</div>
+
+  <div>
+    <button id="pause">Pause</button>
+    <button id="resume">Resume</button>
+  </div>
+
+  <div id="approval" hidden>
+    <p id="question"></p>
+    <button id="yes">Approve</button>
+    <button id="no">Reject</button>
+  </div>
+
+  <h3>Live log</h3>
+  <div id="log"></div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const post = (url, body) =>
+    fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body || {}) });
+
+  const es = new EventSource("/events");
+
+  es.addEventListener("log", (e) => {
+    const box = $("log");
+    box.textContent += JSON.parse(e.data) + "\n";
+    box.scrollTop = box.scrollHeight;
+  });
+
+  es.addEventListener("status", (e) => {
+    const s = JSON.parse(e.data);
+    $("status").textContent = s.waiting
+      ? "Paused. Press Resume to continue."
+      : s.pauseRequested
+      ? "Pause requested. It will stop at the next safe point."
+      : "Running";
+    $("pause").disabled = s.pauseRequested;
+    $("resume").disabled = !s.pauseRequested;
+    $("approval").hidden = !s.approval;
+    if (s.approval) $("question").textContent = s.approval.question;
+  });
+
+  es.onerror = () => { $("status").textContent = "Disconnected (the run may have finished)."; };
+
+  $("pause").onclick = () => post("/pause");
+  $("resume").onclick = () => post("/resume");
+  $("yes").onclick = () => post("/approve", { answer: "y" });
+  $("no").onclick = () => post("/approve", { answer: "n" });
+</script>
+</body>
+</html>
