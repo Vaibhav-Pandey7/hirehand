@@ -69,8 +69,8 @@ If a field cannot be filled from the data, use null.`
       }
 
       // The moment of no return: after this click the server may have saved something
+      clicked = true;//this should be before as if timeout happens the playwright will click it but nothing will happen on the screen and if the clicked is after even though the clicked happens the server may not have saved anything and the maybeSaved will be false which is wrong
       await page.locator("button, input[type=submit]").first().click();
-      clicked = true;
 
       await page.waitForLoadState("load");
 
