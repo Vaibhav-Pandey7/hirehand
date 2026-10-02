@@ -10,12 +10,13 @@ export async function findJobs(state) {
 
   for (const company of wanted.filter((c) => COMPANIES.includes(c))) {
     await page.goto(`${BASE}/${company}/jobs`);
-    // Runs inside the page: reads each job card's text into a plain object
-    const found = await page.$$eval(".job", (cards) =>//runs this callback function in the browser 
+    // Runs inside the page: reads each job card's text and its Apply link into a plain object
+    const found = await page.$$eval(".job", (cards) =>
       cards.map((el) => {
         const [title, meta, skills] = el.innerText.split("\n").map((s) => s.trim()).filter(Boolean);
         const [location, mode, yrs] = meta.split("|").map((s) => s.trim());
         const [minExp, maxExp] = yrs.replace(/yrs?/, "").trim().split("-").map(Number);
+        const link = el.querySelector("a");
         return {
           id: el.dataset.jobId,
           title,
@@ -24,10 +25,16 @@ export async function findJobs(state) {
           minExp,
           maxExp,
           skills: skills.replace("Skills:", "").split(",").map((s) => s.trim()),
+          applyHref: link ? link.getAttribute("href") : null, // the real Apply link from the page
         };
       })
     );
-    jobs.push(...found.map((j) => ({ ...j, company })));
+    // Turn the relative link into a full URL here, so later steps can just open it
+    jobs.push(
+      ...found
+        .filter((j) => j.applyHref)
+        .map((j) => ({ ...j, company, applyUrl: new URL(j.applyHref, BASE).href }))
+    );
   }
   console.log(`[findJobs] found ${jobs.length} jobs`);
   return { jobs };

@@ -1,5 +1,5 @@
 import { getPage } from "../runtime.js";
-import { BASE, alreadyApplied } from "../browser/session.js";
+import { alreadyApplied } from "../browser/session.js";
 import { applyGeneric } from "../browser/apply.js";
 import { waitIfPaused } from "../control.js";
 
@@ -20,7 +20,9 @@ export async function applyToJob(state) {
   }
 
   const page = await getPage();
-  const outcome = await applyGeneric(page, `${BASE}/${job.company}/apply/${job.id}`, candidate, job.title);
+  // Open the Apply link that findJobs read from the jobs page, not a URL we built ourselves
+  console.log(job.applyUrl);
+  const outcome = await applyGeneric(page, job.applyUrl, candidate, job.title);
   console.log(`[applyToJob] ${job.title}: ${outcome.status}${outcome.reason ? " (" + outcome.reason + ")" : ""}`);
 
   if (outcome.status === "submitted") return { outcome, results: [{ ...base, ...outcome }] };
